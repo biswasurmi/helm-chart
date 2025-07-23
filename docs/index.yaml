@@ -3,12 +3,12 @@ entries:
   book-project:
   - apiVersion: v2
     appVersion: v3
-    created: "2025-07-23T12:26:33.996073024+06:00"
+    created: "2025-07-23T12:37:54.08979593+06:00"
     description: Helm chart to deploy urmibiswas/book_project:v3
     digest: c8029fa6593f9edb2ef8b93ed9eec8a9303ce1c81400c9b025ead2e67d51eaf2
     name: book-project
     type: application
     urls:
-    - https://biswasurmi.github.io/helm-chart/book-project-0.1.0.tgz
+    - https://biswasurmi.github.io/helm-chart/docs/book-project-0.1.0.tgz
     version: 0.1.0
-generated: "2025-07-23T12:26:33.995434256+06:00"
+generated: "2025-07-23T12:37:54.089152301+06:00"
