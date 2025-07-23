@@ -1,0 +1,191 @@
+
+---
+
+# Helm Kubernetes Deployment Summary — Step-by-Step
+
+---
+
+## 1. **Create a new Helm chart**
+
+```bash
+helm create <chart-name>
+```
+
+*Example:*
+
+```bash
+helm create book-project
+```
+
+---
+
+## 2. **Edit Helm chart files**
+
+* `Chart.yaml`: update metadata like name, version, appVersion.
+* `values.yaml`: set default values for your app (replicaCount, image repo, tag, command, args, probes, resources, etc.)
+* `templates/deployment.yaml`: modify container spec, include `command` and `args` if needed.
+* Other template files: service, ingress, serviceaccount, etc.
+
+---
+
+## 3. **Validate your Helm chart (dry-run)**
+
+Run a dry-run install with debug to check manifests before actual deployment:
+
+```bash
+helm install <release-name> . --dry-run --debug
+```
+
+*Example:*
+
+```bash
+helm install my-book . --dry-run --debug
+```
+
+* This renders your Kubernetes manifests locally without applying them.
+* Check for errors or unexpected configs.
+
+---
+
+## 4. **Install your Helm chart (deploy)**
+
+Deploy your Helm release to the Kubernetes cluster:
+
+```bash
+helm install <release-name> .
+```
+
+*Example:*
+
+```bash
+helm install my-book .
+```
+
+---
+
+## 5. **Verify deployment**
+
+Check status of pods, services, and deployments:
+
+```bash
+kubectl get all
+```
+
+Check specific pods by label:
+
+```bash
+kubectl get pods -l app.kubernetes.io/instance=<release-name>
+```
+
+---
+
+## 6. **Debug failing pods**
+
+If pods crash or don’t start:
+
+```bash
+kubectl logs <pod-name>
+```
+
+Or get logs for all pods with a label selector:
+
+```bash
+kubectl logs -l app.kubernetes.io/instance=<release-name>
+```
+
+---
+
+## 7. **Port-forward to access app locally**
+
+Get pod name:
+
+```bash
+export POD_NAME=$(kubectl get pods -l app.kubernetes.io/instance=<release-name> -o jsonpath="{.items[0].metadata.name}")
+```
+
+Get container port:
+
+```bash
+export CONTAINER_PORT=$(kubectl get pod $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+```
+
+Port-forward to localhost:
+
+```bash
+kubectl port-forward $POD_NAME 8080:$CONTAINER_PORT
+```
+
+Access your app at:
+
+```
+http://localhost:8080
+```
+
+---
+
+## 8. **Upgrade your Helm release**
+
+If you make changes to your chart or values, apply changes:
+
+```bash
+helm upgrade <release-name> .
+```
+
+---
+
+## 9. **Uninstall / Delete your Helm release**
+
+Clean up resources:
+
+```bash
+helm uninstall <release-name>
+```
+
+---
+
+## Optional — Useful commands:
+
+* **List all Helm releases:**
+
+  ```bash
+  helm list
+  ```
+
+* **Get detailed info on a release:**
+
+  ```bash
+  helm status <release-name>
+  ```
+
+* **Template rendering without install:**
+
+  ```bash
+  helm template <release-name> .
+  ```
+
+---
+
+# Example for your book-project:
+
+```bash
+helm create book-project             # create chart (once)
+# edit values.yaml and templates as needed
+
+helm install my-book .               # deploy app
+kubectl get all                      # check resources
+kubectl logs -l app.kubernetes.io/instance=my-book    # check logs if needed
+
+export POD_NAME=$(kubectl get pods -l app.kubernetes.io/instance=my-book -o jsonpath="{.items[0].metadata.name}")
+export CONTAINER_PORT=$(kubectl get pod $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+kubectl port-forward $POD_NAME 8080:$CONTAINER_PORT  # access app on localhost:8080
+
+# To upgrade app after changes
+helm upgrade my-book .
+
+# To uninstall
+helm uninstall my-book
+```
+
+---
+
+
